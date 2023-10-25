@@ -1,7 +1,6 @@
 package com.db.dataplatform.techtest.server.component;
 
 import com.db.dataplatform.techtest.server.api.model.DataEnvelope;
-import com.db.dataplatform.techtest.server.persistence.model.DataBodyEntity;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;

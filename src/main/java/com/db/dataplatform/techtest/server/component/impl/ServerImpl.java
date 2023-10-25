@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static com.db.dataplatform.techtest.Constant.DUMMY_DATA;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -71,12 +69,9 @@ public class ServerImpl implements Server {
     public List<DataEnvelope> getDataEnvelope(String blocktype) {
         log.info("Get with blocktype: {}" , blocktype);
 
-        List<DataEnvelope> result = null;
         for(BlockTypeEnum c : BlockTypeEnum.values()) {
             if (c.name().equals(blocktype)) {
-                List<DataBodyEntity> dataBodyEntityList = dataBodyServiceImpl.getDataBodyByBlockType(c);
-                List<DataEnvelope> dataEnvelopeList = getDataEnvelopes(dataBodyEntityList);
-                return dataEnvelopeList;
+                return getDataEnvelopes(dataBodyServiceImpl.getDataBodyByBlockType(c));
             }
         }
         return null;

@@ -31,7 +31,7 @@ public class ServerController {
     private final Server server;
 
     @PostMapping(value = "/pushdata", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Boolean> pushData(@Valid @RequestBody DataEnvelope dataEnvelope, @RequestHeader("Content-MD5") String md5) throws IOException, NoSuchAlgorithmException, ExecutionException, InterruptedException {
+    public ResponseEntity<Boolean> pushData(@Valid @RequestBody DataEnvelope dataEnvelope, @RequestHeader("Content-MD5") String md5) throws IOException, NoSuchAlgorithmException {
         log.info("Data envelope received: {}", dataEnvelope.getDataHeader().getName());
         boolean checksumPass = server.saveDataEnvelope(dataEnvelope, md5);
         log.info("Data envelope persisted. Attribute name: {}", dataEnvelope.getDataHeader().getName());
@@ -61,7 +61,7 @@ public class ServerController {
     }
 
     @GetMapping(value = "/update/{name}/{newBlockType}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Boolean> updateData(@PathVariable @NotNull @Size(max=30) String name, @PathVariable @NotNull @Size(max=11) String newBlockType) throws IOException, NoSuchAlgorithmException {
+    public ResponseEntity<Boolean> updateData(@PathVariable @NotNull @Size(max=30) String name, @PathVariable @NotNull @Size(max=11) String newBlockType) {
         log.info("Updating {} to new block type {}", name, newBlockType);
         boolean result = server.updateDataBlockType(name, newBlockType);
         return ResponseEntity.ok(result);

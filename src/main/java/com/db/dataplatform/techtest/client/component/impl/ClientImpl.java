@@ -61,7 +61,7 @@ public class   ClientImpl implements Client {
 
         Map<String, String> uriVariables = new HashMap<String, String>();
         uriVariables.put("blockType", blockType);
-        log.info("Querying by {}", URI_GETDATA.expand(uriVariables).toString());
+        log.info("Querying by {}", URI_GETDATA.expand(uriVariables));
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<List> response =
@@ -87,7 +87,7 @@ public class   ClientImpl implements Client {
         Map<String, String> uriVariables = new HashMap<String, String>();
         uriVariables.put("name", blockName);
         uriVariables.put("newBlockType", newBlockType);
-        log.info("Updating by {}", URI_PATCHDATA.expand(uriVariables).toString());
+        log.info("Updating by {}", URI_PATCHDATA.expand(uriVariables));
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Boolean> response = restTemplate.getForEntity(URI_PATCHDATA.expand(uriVariables), Boolean.class);
