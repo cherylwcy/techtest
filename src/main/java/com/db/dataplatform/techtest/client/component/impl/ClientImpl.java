@@ -49,7 +49,7 @@ public class   ClientImpl implements Client {
             HttpEntity<DataEnvelope> entity = new HttpEntity<>(dataEnvelope, headers);
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<Boolean> response = restTemplate.postForEntity(URI_PUSHDATA, entity, Boolean.class);
-            log.info("PushData {}: {}", dataEnvelope.getDataHeader().getName(), response.getBody() ? "Success" : "Failed");
+            log.info("PushData {}: {}", dataEnvelope.getDataHeader().getName(), Boolean.TRUE.equals(response.getBody()) ? "Success" : "Failed");
         }
         catch (Exception e) {
             log.error("Exception", e);
@@ -59,14 +59,18 @@ public class   ClientImpl implements Client {
     @Override
     public List<DataEnvelope> getData(String blockType) {
 
-        Map<String, String> uriVariables = new HashMap<String, String>();
+        Map<String, String> uriVariables = new HashMap<>();
         uriVariables.put("blockType", blockType);
         log.info("Querying by {}", URI_GETDATA.expand(uriVariables));
 
         RestTemplate restTemplate = new RestTemplate();
+
+        @SuppressWarnings("rawtypes")
         ResponseEntity<List> response =
                 restTemplate.getForEntity(URI_GETDATA.expand(uriVariables),
                         List.class);
+
+        @SuppressWarnings("unchecked")
         List<DataEnvelope> dataEnvelopeList = response.getBody();
 
         if (dataEnvelopeList != null && !dataEnvelopeList.isEmpty()) {
@@ -84,14 +88,14 @@ public class   ClientImpl implements Client {
     @Override
     public boolean updateData(String blockName, String newBlockType) {
 
-        Map<String, String> uriVariables = new HashMap<String, String>();
+        Map<String, String> uriVariables = new HashMap<>();
         uriVariables.put("name", blockName);
         uriVariables.put("newBlockType", newBlockType);
         log.info("Updating by {}", URI_PATCHDATA.expand(uriVariables));
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Boolean> response = restTemplate.getForEntity(URI_PATCHDATA.expand(uriVariables), Boolean.class);
-        log.info("Update data {} to new block type {}: {}", blockName, newBlockType, response.getBody() ? "Success" : "Failed");
+        log.info("Update data {} to new block type {}: {}", blockName, newBlockType, Boolean.TRUE.equals(response.getBody()) ? "Success" : "Failed");
         return response.getBody();
     }
 }

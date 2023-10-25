@@ -78,7 +78,7 @@ public class ServerImpl implements Server {
     }
 
     private static List<DataEnvelope> getDataEnvelopes(List<DataBodyEntity> dataBodyEntityList) {
-        List<DataEnvelope> dataEnvelopeList = new ArrayList<DataEnvelope>();
+        List<DataEnvelope> dataEnvelopeList = new ArrayList<>();
         for (DataBodyEntity dataBodyEntity : dataBodyEntityList) {
             DataBody dataBody = new DataBody(dataBodyEntity.getDataBody());
             DataHeader dataHeader = new DataHeader(dataBodyEntity.getDataHeaderEntity().getName(), dataBodyEntity.getDataHeaderEntity().getBlocktype());

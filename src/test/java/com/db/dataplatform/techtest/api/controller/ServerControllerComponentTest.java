@@ -61,7 +61,7 @@ public class ServerControllerComponentTest {
 
 		when(serverMock.saveDataEnvelope(any(DataEnvelope.class), any(String.class))).thenReturn(true);
 
-		List<DataEnvelope> mockDataEnvelopeList = new ArrayList<DataEnvelope>();
+		List<DataEnvelope> mockDataEnvelopeList = new ArrayList<>();
 		mockDataEnvelopeList.add(testDataEnvelope);
 		when(serverMock.getDataEnvelope(BlockTypeEnum.BLOCKTYPEA.name())).thenReturn(mockDataEnvelopeList);
 
@@ -87,7 +87,7 @@ public class ServerControllerComponentTest {
 	@Test
 	public void testQueryData() throws Exception {
 
-		Map<String, String> uriVariables = new HashMap<String, String>();
+		Map<String, String> uriVariables = new HashMap<>();
 		uriVariables.put("blockType", testDataEnvelope.getDataHeader().getBlockType().name());
 
 		MvcResult mvcResult = mockMvc.perform(get(URI_GETDATA.expand(uriVariables)))
@@ -96,7 +96,7 @@ public class ServerControllerComponentTest {
 
 		String queryDataJson = mvcResult.getResponse().getContentAsString();
 
-		List<DataEnvelope> mockDataEnvelopeList = new ArrayList<DataEnvelope>();
+		List<DataEnvelope> mockDataEnvelopeList = new ArrayList<>();
 		mockDataEnvelopeList.add(testDataEnvelope);
 		String testDataEnvelopeJson = objectMapper.writeValueAsString(mockDataEnvelopeList);
 
@@ -105,7 +105,7 @@ public class ServerControllerComponentTest {
 
 	@Test
 	public void testUpdateData() throws Exception {
-		Map<String, String> uriVariables = new HashMap<String, String>();
+		Map<String, String> uriVariables = new HashMap<>();
 		uriVariables.put("name", testDataEnvelope.getDataHeader().getName());
 		uriVariables.put("newBlockType", BlockTypeEnum.BLOCKTYPEB.name());
 

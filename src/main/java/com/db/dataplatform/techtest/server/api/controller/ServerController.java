@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Controller
@@ -57,7 +56,7 @@ public class ServerController {
     public ResponseEntity<List<DataEnvelope>> queryData(@PathVariable String blockType) {
         log.info("Querying data with blockType="+blockType);
         List<DataEnvelope> result = server.getDataEnvelope(blockType);
-        return new ResponseEntity<List<DataEnvelope>>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "/update/{name}/{newBlockType}", produces = MediaType.APPLICATION_JSON_VALUE)
