@@ -1,0 +1,140 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > RestTemplateConfiguration</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.db.dataplatform.techtest.client</a>
+</div>
+
+<h1>Coverage Summary for Class: RestTemplateConfiguration (com.db.dataplatform.techtest.client)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RestTemplateConfiguration</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.db.dataplatform.techtest.client;
+&nbsp;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.apache.http.impl.client.CloseableHttpClient;
+&nbsp;import org.apache.http.impl.client.HttpClients;
+&nbsp;import org.springframework.boot.web.client.RestTemplateBuilder;
+&nbsp;import org.springframework.context.annotation.Bean;
+&nbsp;import org.springframework.context.annotation.Configuration;
+&nbsp;import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+&nbsp;import org.springframework.http.converter.StringHttpMessageConverter;
+&nbsp;import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;
+&nbsp;import java.util.Arrays;
+&nbsp;
+&nbsp;@Configuration
+<b class="nc">&nbsp;@RequiredArgsConstructor</b>
+&nbsp;public class RestTemplateConfiguration {
+&nbsp;
+&nbsp;    private final RestTemplateBuilder restTemplateBuilder;
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    public RestTemplate createRestTemplate(MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter,
+&nbsp;                                           StringHttpMessageConverter stringHttpMessageConverter) {
+&nbsp;
+<b class="nc">&nbsp;        RestTemplate restTemplate = restTemplateBuilder.build();</b>
+&nbsp;
+<b class="nc">&nbsp;        CloseableHttpClient client = HttpClients.createDefault();</b>
+<b class="nc">&nbsp;        RestTemplate template= new RestTemplate();</b>
+<b class="nc">&nbsp;        template.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));</b>
+<b class="nc">&nbsp;        template.setMessageConverters(Arrays.asList(mappingJackson2HttpMessageConverter, stringHttpMessageConverter));</b>
+&nbsp;
+<b class="nc">&nbsp;        return restTemplate;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-24 19:26</div>
+</div>
+</body>
+</html>

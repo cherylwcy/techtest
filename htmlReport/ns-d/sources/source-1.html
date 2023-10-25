@@ -1,0 +1,151 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > DataBodyEntity</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.db.dataplatform.techtest.server.persistence.model</a>
+</div>
+
+<h1>Coverage Summary for Class: DataBodyEntity (com.db.dataplatform.techtest.server.persistence.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DataBodyEntity</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57.1%
+  </span>
+  <span class="absValue">
+    (4/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (4/8)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.db.dataplatform.techtest.server.persistence.model;
+&nbsp;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.Setter;
+&nbsp;
+&nbsp;import javax.persistence.CascadeType;
+&nbsp;import javax.persistence.Column;
+&nbsp;import javax.persistence.Entity;
+&nbsp;import javax.persistence.FetchType;
+&nbsp;import javax.persistence.GeneratedValue;
+&nbsp;import javax.persistence.Id;
+&nbsp;import javax.persistence.JoinColumn;
+&nbsp;import javax.persistence.OneToOne;
+&nbsp;import javax.persistence.PrePersist;
+&nbsp;import javax.persistence.SequenceGenerator;
+&nbsp;import javax.persistence.Table;
+&nbsp;import java.time.Instant;
+&nbsp;
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;DATA_STORE&quot;)
+<b class="fc">&nbsp;@Setter</b>
+&nbsp;@Getter
+<b class="fc">&nbsp;public class DataBodyEntity {</b>
+&nbsp;
+&nbsp;    @Id
+&nbsp;    @SequenceGenerator(name = &quot;dataStoreSequenceGenerator&quot;, sequenceName = &quot;SEQ_DATA_STORE&quot;, allocationSize = 1)
+&nbsp;    @GeneratedValue(generator = &quot;dataStoreSequenceGenerator&quot;)
+&nbsp;    @Column(name = &quot;DATA_STORE_ID&quot;)
+<b class="nc">&nbsp;    private Long dataStoreId;</b>
+&nbsp;
+&nbsp;    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+&nbsp;    @JoinColumn(name = &quot;DATA_HEADER_ID&quot;)
+<b class="fc">&nbsp;    private DataHeaderEntity dataHeaderEntity;</b>
+&nbsp;
+&nbsp;    @Column(name = &quot;DATA_BODY&quot;)
+<b class="fc">&nbsp;    private String dataBody;</b>
+&nbsp;
+&nbsp;    @Column(name = &quot;CREATED_TIMESTAMP&quot;)
+<b class="nc">&nbsp;    private Instant createdTimestamp;</b>
+&nbsp;
+&nbsp;    @PrePersist
+&nbsp;    public void setTimestamps() {
+<b class="nc">&nbsp;        if (createdTimestamp == null) {</b>
+<b class="nc">&nbsp;            createdTimestamp = Instant.now();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-24 19:26</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,219 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ServerImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.db.dataplatform.techtest.server.component.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: ServerImpl (com.db.dataplatform.techtest.server.component.impl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServerImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    55.6%
+  </span>
+  <span class="absValue">
+    (5/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    28.2%
+  </span>
+  <span class="absValue">
+    (11/39)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.db.dataplatform.techtest.server.component.impl;
+&nbsp;
+&nbsp;import com.db.dataplatform.techtest.server.api.model.DataBody;
+&nbsp;import com.db.dataplatform.techtest.server.api.model.DataHeader;
+&nbsp;import com.db.dataplatform.techtest.server.api.model.DataEnvelope;
+&nbsp;import com.db.dataplatform.techtest.server.persistence.BlockTypeEnum;
+&nbsp;import com.db.dataplatform.techtest.server.persistence.model.DataBodyEntity;
+&nbsp;import com.db.dataplatform.techtest.server.persistence.model.DataHeaderEntity;
+&nbsp;import com.db.dataplatform.techtest.server.service.DataBodyService;
+&nbsp;import com.db.dataplatform.techtest.server.component.Server;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.modelmapper.ModelMapper;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.scheduling.annotation.Async;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.util.CollectionUtils;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.concurrent.CompletableFuture;
+&nbsp;
+&nbsp;import static com.db.dataplatform.techtest.Constant.DUMMY_DATA;
+&nbsp;
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@Service
+<b class="fc">&nbsp;@RequiredArgsConstructor</b>
+&nbsp;public class ServerImpl implements Server {
+&nbsp;
+&nbsp;    private final DataBodyService dataBodyServiceImpl;
+&nbsp;    private final ModelMapper modelMapper;
+&nbsp;
+&nbsp;    public static final String URI_DATALAKE_PUSHDATA = &quot;http://localhost:8090/hadoopserver/pushbigdata&quot;;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param envelope
+&nbsp;     * @return true if there is a match with the client provided checksum.
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public boolean saveDataEnvelope(DataEnvelope envelope) {
+&nbsp;
+&nbsp;        // Save to persistence.
+<b class="fc">&nbsp;        persist(envelope);</b>
+&nbsp;
+<b class="fc">&nbsp;        log.info(&quot;Data persisted successfully, data name: {}&quot;, envelope.getDataHeader().getName());</b>
+&nbsp;
+<b class="fc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void persist(DataEnvelope envelope) {
+<b class="fc">&nbsp;        log.info(&quot;Persisting data with attribute name: {}&quot;, envelope.getDataHeader().getName());</b>
+<b class="fc">&nbsp;        DataHeaderEntity dataHeaderEntity = modelMapper.map(envelope.getDataHeader(), DataHeaderEntity.class);</b>
+&nbsp;
+<b class="fc">&nbsp;        DataBodyEntity dataBodyEntity = modelMapper.map(envelope.getDataBody(), DataBodyEntity.class);</b>
+<b class="fc">&nbsp;        dataBodyEntity.setDataHeaderEntity(dataHeaderEntity);</b>
+&nbsp;
+<b class="fc">&nbsp;        saveData(dataBodyEntity);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void saveData(DataBodyEntity dataBodyEntity) {
+<b class="fc">&nbsp;        dataBodyServiceImpl.saveDataBody(dataBodyEntity);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;DataEnvelope&gt; getDataEnvelope(String blocktype) {
+<b class="nc">&nbsp;        log.info(&quot;Get with blocktype: {}&quot; , blocktype);</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;DataEnvelope&gt; result = null;</b>
+<b class="nc">&nbsp;        for(BlockTypeEnum c : BlockTypeEnum.values()) {</b>
+<b class="nc">&nbsp;            if (c.name().equals(blocktype)) {</b>
+<b class="nc">&nbsp;                List&lt;DataBodyEntity&gt; dataBodyEntityList = dataBodyServiceImpl.getDataBodyByBlockType(c);</b>
+<b class="nc">&nbsp;                List&lt;DataEnvelope&gt; dataEnvelopeList = getDataEnvelopes(dataBodyEntityList);</b>
+<b class="nc">&nbsp;                return dataEnvelopeList;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private static List&lt;DataEnvelope&gt; getDataEnvelopes(List&lt;DataBodyEntity&gt; dataBodyEntityList) {
+<b class="nc">&nbsp;        List&lt;DataEnvelope&gt; dataEnvelopeList = new ArrayList&lt;DataEnvelope&gt;();</b>
+<b class="nc">&nbsp;        for (DataBodyEntity dataBodyEntity : dataBodyEntityList) {</b>
+<b class="nc">&nbsp;            DataBody dataBody = new DataBody(dataBodyEntity.getDataBody());</b>
+<b class="nc">&nbsp;            DataHeader dataHeader = new DataHeader(dataBodyEntity.getDataHeaderEntity().getName(), dataBodyEntity.getDataHeaderEntity().getBlocktype());</b>
+<b class="nc">&nbsp;            DataEnvelope dataEnvelope = new DataEnvelope(dataHeader, dataBody);</b>
+<b class="nc">&nbsp;            dataEnvelopeList.add(dataEnvelope);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return dataEnvelopeList;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean updateDataBlockType(String name, String newBlockType) {
+<b class="nc">&nbsp;        log.info(&quot;Get name &amp; newBlockType: {}, {}&quot;, name, newBlockType);</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;DataBodyEntity&gt; dataBodyEntityList = dataBodyServiceImpl.getDataBodyByBlockName(name);</b>
+<b class="nc">&nbsp;        if (CollectionUtils.isEmpty(dataBodyEntityList))</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;
+<b class="nc">&nbsp;        DataBodyEntity dataBodyEntity = dataBodyEntityList.get(0);</b>
+<b class="nc">&nbsp;        dataBodyEntity.getDataHeaderEntity().setBlocktype(BlockTypeEnum.valueOf(newBlockType));</b>
+<b class="nc">&nbsp;        dataBodyServiceImpl.saveDataBody(dataBodyEntity);</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Async
+&nbsp;    public CompletableFuture&lt;HttpStatus&gt; saveDataLake(String payload) {
+<b class="nc">&nbsp;        log.info(&quot;Save payload to data lake: {}&quot;, payload);</b>
+&nbsp;        //return CompletableFuture.completedFuture();
+&nbsp;
+<b class="nc">&nbsp;        RestTemplate restTemplate = new RestTemplate();</b>
+<b class="nc">&nbsp;        ResponseEntity&lt;HttpStatus&gt; response = restTemplate.postForEntity(URI_DATALAKE_PUSHDATA, payload, HttpStatus.class);</b>
+&nbsp;
+<b class="nc">&nbsp;        return CompletableFuture.completedFuture(response.getBody());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-10-24 19:26</div>
+</div>
+</body>
+</html>
