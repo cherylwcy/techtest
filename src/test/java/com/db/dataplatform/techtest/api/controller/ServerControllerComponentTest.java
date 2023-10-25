@@ -1,7 +1,6 @@
 package com.db.dataplatform.techtest.api.controller;
 
 import com.db.dataplatform.techtest.TestDataHelper;
-import com.db.dataplatform.techtest.server.api.controller.HadoopDummyServerController;
 import com.db.dataplatform.techtest.server.api.controller.ServerController;
 import com.db.dataplatform.techtest.server.api.model.DataEnvelope;
 import com.db.dataplatform.techtest.server.exception.HadoopClientException;
@@ -16,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -55,7 +53,7 @@ public class ServerControllerComponentTest {
 	private ServerController serverController;
 
 	@Before
-	public void setUp() throws HadoopClientException, NoSuchAlgorithmException, IOException {
+	public void setUp() throws NoSuchAlgorithmException, IOException {
 		serverController = new ServerController(serverMock);
 
 		mockMvc = standaloneSetup(serverController).build();
