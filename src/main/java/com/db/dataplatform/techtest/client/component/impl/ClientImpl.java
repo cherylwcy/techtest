@@ -96,6 +96,6 @@ public class   ClientImpl implements Client {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Boolean> response = restTemplate.getForEntity(URI_PATCHDATA.expand(uriVariables), Boolean.class);
         log.info("Update data {} to new block type {}: {}", blockName, newBlockType, Boolean.TRUE.equals(response.getBody()) ? "Success" : "Failed");
-        return response.getBody();
+        return Boolean.TRUE.equals(response.getBody());
     }
 }
