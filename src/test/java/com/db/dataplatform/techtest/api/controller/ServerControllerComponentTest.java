@@ -3,7 +3,6 @@ package com.db.dataplatform.techtest.api.controller;
 import com.db.dataplatform.techtest.TestDataHelper;
 import com.db.dataplatform.techtest.server.api.controller.ServerController;
 import com.db.dataplatform.techtest.server.api.model.DataEnvelope;
-import com.db.dataplatform.techtest.server.exception.HadoopClientException;
 import com.db.dataplatform.techtest.server.component.Server;
 import com.db.dataplatform.techtest.server.persistence.BlockTypeEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
