@@ -55,7 +55,7 @@ public class TechTestApplication {
 
 		DataBody dataBody = new DataBody(DUMMY_DATA);
 
-		DataHeader dataHeader = new DataHeader("", BlockTypeEnum.BLOCKTYPEA);
+		DataHeader dataHeader = new DataHeader(HEADER_NAME, BlockTypeEnum.BLOCKTYPEA);
 
 		DataEnvelope dataEnvelope = new DataEnvelope(dataHeader, dataBody);
 
