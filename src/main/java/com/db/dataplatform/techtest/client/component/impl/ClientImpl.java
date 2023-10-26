@@ -72,6 +72,7 @@ public class   ClientImpl implements Client {
             @SuppressWarnings("unchecked")
             List<DataEnvelope> dataEnvelopeList = response.getBody();
             if (dataEnvelopeList != null && !dataEnvelopeList.isEmpty()) {
+                log.info("{} dataEnvelope can be found for {}.", dataEnvelopeList.size(), blockType);
                 printJSON(dataEnvelopeList);
             } else {
                 log.info("No DataEnvelope can be found for {}.", blockType);
