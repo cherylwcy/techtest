@@ -11,6 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
@@ -34,25 +35,23 @@ public class   ClientImpl implements Client {
     @Override
     public void pushData(DataEnvelope dataEnvelope) {
         log.info("Pushing data {} to {}", dataEnvelope.getDataHeader().getName(), URI_PUSHDATA);
+
+        printJSON(dataEnvelope);
+        String md5hex = DigestUtils.md5Hex(dataEnvelope.getDataBody().getDataBody());
+        log.debug("Client MD5: {}",md5hex);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Accept", "application/json");
+        headers.add("Content-type", "application/json");
+        headers.add("Content-MD5", md5hex);
+
         try {
-            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-            String json = ow.writeValueAsString(dataEnvelope);
-            log.debug("Data block: {}", json);
-            String md5hex = DigestUtils.md5Hex(dataEnvelope.getDataBody().getDataBody());
-            log.debug("Client MD5: {}",md5hex);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Accept", "application/json");
-            headers.add("Content-type", "application/json");
-            headers.add("Content-MD5", md5hex);
-
             HttpEntity<DataEnvelope> entity = new HttpEntity<>(dataEnvelope, headers);
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<Boolean> response = restTemplate.postForEntity(URI_PUSHDATA, entity, Boolean.class);
             log.info("PushData {}: {}", dataEnvelope.getDataHeader().getName(), Boolean.TRUE.equals(response.getBody()) ? "Success" : "Failed");
-        }
-        catch (Exception e) {
-            log.error("Exception", e);
+        } catch (HttpClientErrorException httpClientErrorException) {
+            log.error("{} failed: Response {}", URI_PUSHDATA, httpClientErrorException.getStatusCode());
         }
     }
 
@@ -63,26 +62,26 @@ public class   ClientImpl implements Client {
         uriVariables.put("blockType", blockType);
         log.info("Querying by {}", URI_GETDATA.expand(uriVariables));
 
-        RestTemplate restTemplate = new RestTemplate();
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            @SuppressWarnings("rawtypes")
+            ResponseEntity<List> response =
+                    restTemplate.getForEntity(URI_GETDATA.expand(uriVariables),
+                            List.class);
 
-        @SuppressWarnings("rawtypes")
-        ResponseEntity<List> response =
-                restTemplate.getForEntity(URI_GETDATA.expand(uriVariables),
-                        List.class);
-
-        @SuppressWarnings("unchecked")
-        List<DataEnvelope> dataEnvelopeList = response.getBody();
-
-        if (dataEnvelopeList != null && !dataEnvelopeList.isEmpty()) {
-            try {
-                ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-                String json = ow.writeValueAsString(dataEnvelopeList);
-                log.info("dataEnvelopeList: " + json);
-            } catch (Exception e) {
-                log.info("Cannot convert to JSON", e);
+            @SuppressWarnings("unchecked")
+            List<DataEnvelope> dataEnvelopeList = response.getBody();
+            if (dataEnvelopeList != null && !dataEnvelopeList.isEmpty()) {
+                printJSON(dataEnvelopeList);
+            } else {
+                log.info("No DataEnvelope can be found for {}.", blockType);
             }
+            return dataEnvelopeList;
+
+        } catch (HttpClientErrorException httpClientErrorException) {
+            log.error("{} failed: Response {}", URI_GETDATA.expand(uriVariables), httpClientErrorException.getStatusCode());
         }
-        return dataEnvelopeList;
+        return null;
     }
 
     @Override
@@ -93,9 +92,24 @@ public class   ClientImpl implements Client {
         uriVariables.put("newBlockType", newBlockType);
         log.info("Updating by {}", URI_PATCHDATA.expand(uriVariables));
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Boolean> response = restTemplate.getForEntity(URI_PATCHDATA.expand(uriVariables), Boolean.class);
-        log.info("Update data {} to new block type {}: {}", blockName, newBlockType, Boolean.TRUE.equals(response.getBody()) ? "Success" : "Failed");
-        return Boolean.TRUE.equals(response.getBody());
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Boolean> response = restTemplate.getForEntity(URI_PATCHDATA.expand(uriVariables), Boolean.class);
+            log.info("Update data {} to new block type {}: {}", blockName, newBlockType, Boolean.TRUE.equals(response.getBody()) ? "Success" : "Failed");
+            return Boolean.TRUE.equals(response.getBody());
+        } catch (HttpClientErrorException httpClientErrorException) {
+            log.error("{} failed: Response {}", URI_PATCHDATA.expand(uriVariables), httpClientErrorException.getStatusCode());
+        }
+        return false;
+    }
+
+    private void printJSON (Object object) {
+        try {
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String json = ow.writeValueAsString(object);
+            log.debug("JSON: {}", json);
+        } catch (Exception e) {
+            log.debug("Cannot convert to JSON", e);
+        }
     }
 }

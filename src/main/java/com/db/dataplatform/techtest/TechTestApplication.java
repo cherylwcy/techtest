@@ -40,8 +40,6 @@ public class TechTestApplication {
 		queryData();
 
 		updateData();
-
-		client.getData(BlockTypeEnum.BLOCKTYPEB.name());
 	}
 
 	private void updateData() throws UnsupportedEncodingException {
@@ -57,7 +55,7 @@ public class TechTestApplication {
 
 		DataBody dataBody = new DataBody(DUMMY_DATA);
 
-		DataHeader dataHeader = new DataHeader(HEADER_NAME, BlockTypeEnum.BLOCKTYPEA);
+		DataHeader dataHeader = new DataHeader("", BlockTypeEnum.BLOCKTYPEA);
 
 		DataEnvelope dataEnvelope = new DataEnvelope(dataHeader, dataBody);
 
