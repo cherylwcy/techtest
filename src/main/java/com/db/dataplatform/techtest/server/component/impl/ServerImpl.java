@@ -34,6 +34,7 @@ public class ServerImpl implements Server {
     public static final String URI_DATALAKE_PUSHDATA = "http://localhost:8090/hadoopserver/pushbigdata";
 
     /**
+     * Save the data block in DB if checksum equals to the calculated checksum
      * @param envelope Data block
      * @param checksum MD5 checksum from HTTP header "Content-MD5"
      * @return true if there is a match with the client provided checksum.
@@ -43,7 +44,7 @@ public class ServerImpl implements Server {
 
         // Check
         String calculatedCheckSum = DigestUtils.md5Hex(envelope.getDataBody().getDataBody());
-        if (!checksum.equals(calculatedCheckSum))
+        if (checksum != null && !checksum.equals(calculatedCheckSum))
             return false;
 
         // Save to persistence.
@@ -52,6 +53,10 @@ public class ServerImpl implements Server {
         return true;
     }
 
+    /**
+     * Save the DataEnvelope into DB
+     * @param envelope DataEnvelop
+     */
     private void persist(DataEnvelope envelope) {
         log.info("Persisting data with attribute name: {}", envelope.getDataHeader().getName());
         DataHeaderEntity dataHeaderEntity = modelMapper.map(envelope.getDataHeader(), DataHeaderEntity.class);
@@ -62,10 +67,19 @@ public class ServerImpl implements Server {
         saveData(dataBodyEntity);
     }
 
+    /**
+     * Save DataBodyEntity into DB
+     * @param dataBodyEntity Data model of DataEnvelop
+     */
     private void saveData(DataBodyEntity dataBodyEntity) {
         dataBodyServiceImpl.saveDataBody(dataBodyEntity);
     }
 
+    /**
+     * Get a list of DataEnvelop with given blocktype
+     * @param blocktype Name of BlockTypeEnum
+     * @return List of DataEnvelope
+     */
     public List<DataEnvelope> getDataEnvelope(String blocktype) {
         log.info("Get with blocktype: {}" , blocktype);
 
@@ -77,6 +91,11 @@ public class ServerImpl implements Server {
         return null;
     }
 
+    /**
+     * Convert a list of DataBodyEntity to DataEnvelop
+     * @param dataBodyEntityList List of DataBodyEntity
+     * @return List of DataEnvelop
+     */
     private static List<DataEnvelope> getDataEnvelopes(List<DataBodyEntity> dataBodyEntityList) {
         List<DataEnvelope> dataEnvelopeList = new ArrayList<>();
         for (DataBodyEntity dataBodyEntity : dataBodyEntityList) {
@@ -88,6 +107,12 @@ public class ServerImpl implements Server {
         return dataEnvelopeList;
     }
 
+    /**
+     * Update data block with block name in DB with the new block type
+     * @param name Block name
+     * @param newBlockType New block type
+     * @return True if update success, else false
+     */
     public boolean updateDataBlockType(String name, String newBlockType) {
         log.info("Get name & newBlockType: {}, {}", name, newBlockType);
 
@@ -101,6 +126,11 @@ public class ServerImpl implements Server {
         return true;
     }
 
+    /**
+     * Async method for pushing payload to Hadoop data lake
+     * @param payload Payload string
+     * @return Http Status 200 OK if success, else Http 504 timeout
+     */
     @Async
     public CompletableFuture<HttpStatus> saveDataLake(String payload) {
         log.info("Save payload {} to data lake: {}", payload, URI_DATALAKE_PUSHDATA);
